@@ -1,0 +1,29 @@
+---
+- name: Install procmail
+  yum:
+    name: procmail
+    state: latest
+
+- name: Install sendmail
+  yum:
+    name: sendmail
+    state: latest
+
+- name: Prepare path for processEmail.pl
+  command: mkdir -p /opt/smrsh
+  args:
+    creates: /opt/smrsh
+
+- name: open port 25
+  command: iptables -I INPUT 2 -p tcp -m state --state NEW -m tcp --dport 25 -j ACCEPT
+
+- name: Configure sendmail
+  copy:
+    src: mail
+    dest: /etc/mail
+
+- name: Stop postfix
+  command: service postfix stop
+
+- name: Start sendmail
+  command: service sendmail start
